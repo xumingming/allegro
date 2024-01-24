@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ "$ALLEGRO_HOME" = "" ]; then
+    echo "Please set ALLEGRO_HOME to the dir you unzip the allegro files!"
+    exit 1
+fi
+
+if [ "$JAVA_HOME" = "" ]; then
+    echo "JAVA_HOME is not set!"
+    exit 1
+fi
+$JAVA_HOME/bin/java -jar $ALLEGRO_HOME/allegro-0.1.jar "$@"

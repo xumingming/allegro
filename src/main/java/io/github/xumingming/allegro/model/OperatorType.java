@@ -1,0 +1,48 @@
+package io.github.xumingming.allegro.model;
+
+public enum OperatorType
+{
+    LocalExchangeSource,
+    TopN,
+    TaskOutput,
+    LocalExchangeSink,
+    HashAggregation,
+    FilterAndProject,
+    Exchange,
+    ScanFilterAndProject,
+    PartitionedOutput,
+    TableScan,
+    LookupJoin,
+    HashBuilder,
+    Window,
+    Limit,
+    Aggregation,
+    EnforceSingleRow,
+    HashSemiJoin,
+    SetBuilder,
+    AssignUniqueId,
+    MarkDistinct,
+    TableFinish,
+    TableWriter,
+    Merge,
+    LocalMergeSource,
+    LocalMerge,
+    OrderBy,
+    LookupOuter,
+    GroupId,
+    NestedLoopJoin,
+    NestedLoopBuild,
+    StreamingAggregation,
+    LocalExchange,
+
+    // Native
+    CallbackSink,
+    FilterProject,
+    LocalPartition,
+    PartialAggregation,
+    HashProbe,
+    HashBuild,
+    NestedLoopJoinProbe,
+    NestedLoopJoinBuild,
+    MergeExchange
+}

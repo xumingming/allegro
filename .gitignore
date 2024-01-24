@@ -1,0 +1,6 @@
+.gitignore*.iml
+dependency-reduced-pom.xml
+.idea
+allegro.db*
+target
+.DS_Store
