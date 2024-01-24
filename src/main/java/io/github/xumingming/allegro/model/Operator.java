@@ -306,12 +306,29 @@ public class Operator
             return false;
         }
         Operator operator = (Operator) o;
-        return inputPosition == operator.inputPosition && outputPosition == operator.outputPosition && totalDrivers == operator.totalDrivers && operatorType == operator.operatorType && Objects.equals(planNodeId, operator.planNodeId) && Objects.equals(stageId, operator.stageId) && Objects.equals(inputDataSize, operator.inputDataSize) && Objects.equals(outputDataSize, operator.outputDataSize) && Objects.equals(peakMemory, operator.peakMemory) && Objects.equals(addInputCpu, operator.addInputCpu) && Objects.equals(getOutputCpu, operator.getOutputCpu) && Objects.equals(finishCpu, operator.finishCpu) && Objects.equals(addInputWall, operator.addInputWall) && Objects.equals(getOutputWall, operator.getOutputWall) && Objects.equals(finishWall, operator.finishWall);
+        return inputPosition == operator.inputPosition
+                && outputPosition == operator.outputPosition
+                && totalDrivers == operator.totalDrivers
+                && operatorType == operator.operatorType
+                && Objects.equals(planNodeId, operator.planNodeId)
+                && Objects.equals(stageId, operator.stageId)
+                && Objects.equals(inputDataSize, operator.inputDataSize)
+                && Objects.equals(outputDataSize, operator.outputDataSize)
+                && Objects.equals(peakMemory, operator.peakMemory)
+                && Objects.equals(addInputCpu, operator.addInputCpu)
+                && Objects.equals(getOutputCpu, operator.getOutputCpu)
+                && Objects.equals(finishCpu, operator.finishCpu)
+                && Objects.equals(addInputWall, operator.addInputWall)
+                && Objects.equals(getOutputWall, operator.getOutputWall)
+                && Objects.equals(finishWall, operator.finishWall);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(operatorType, planNodeId, stageId, inputDataSize, inputPosition, outputDataSize, outputPosition, peakMemory, addInputCpu, getOutputCpu, finishCpu, addInputWall, getOutputWall, finishWall, totalDrivers);
+        return Objects.hash(operatorType, planNodeId, stageId, inputDataSize,
+                inputPosition, outputDataSize, outputPosition, peakMemory,
+                addInputCpu, getOutputCpu, finishCpu, addInputWall, getOutputWall,
+                finishWall, totalDrivers);
     }
 }

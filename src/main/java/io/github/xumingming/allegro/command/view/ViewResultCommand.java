@@ -1,7 +1,5 @@
 package io.github.xumingming.allegro.command.view;
 
-import io.github.xumingming.allegro.RunNameAndSuite;
-import io.github.xumingming.allegro.Suite;
 import io.github.xumingming.allegro.service.AnalysisService;
 import io.github.xumingming.allegro.service.ResultService;
 import io.github.xumingming.beauty.TableStyle;
@@ -64,10 +62,8 @@ public class ViewResultCommand
     {
         try {
             List<String> validRunNames = resultService.listRunNames();
-            List<RunNameAndSuite> runNameAndSuites = new ArrayList<>();
             for (String run : runs) {
                 checkState(validRunNames.contains(run), "Invalid run name: " + run);
-                runNameAndSuites.add(new RunNameAndSuite(run, Suite.baseline));
             }
 
             List<String> queryNames = new ArrayList<>();
@@ -76,13 +72,13 @@ public class ViewResultCommand
             }
 
             TableStyle tableStyle = TableStyle.valueOf(format.toUpperCase(Locale.ROOT));
-            if (runNameAndSuites.size() == 1) {
-                new ViewSingleResultAction(runNameAndSuites.get(0), queryNames, normalize, tableStyle).act();
+            if (runs.size() == 1) {
+                new ViewSingleResultAction(runs.get(0), queryNames, normalize, tableStyle).act();
             }
             else {
                 if (names == null) {
                     new CompareResultAction(
-                            runNameAndSuites,
+                            runs,
                             Optional.empty(),
                             queryNames,
                             normalize,
@@ -90,7 +86,7 @@ public class ViewResultCommand
                 }
                 else {
                     new CompareResultAction(
-                            runNameAndSuites,
+                            runs,
                             Optional.of(Arrays.stream(names.split(",")).collect(Collectors.toList())),
                             queryNames,
                             normalize,

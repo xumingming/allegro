@@ -34,7 +34,6 @@ public class AllegroConf
     private void init(String runName, String dbName)
     {
         baseline.setRunName(runName);
-        baseline.setSuite(Suite.baseline);
         if (dbName != null) {
             baseline.setDbName(dbName);
         }
@@ -45,7 +44,7 @@ public class AllegroConf
         init(runName, dbName);
         String error = baseline.validate();
         if (error != null) {
-            return "[baseline] " + error;
+            return error;
         }
 
         return null;

@@ -72,15 +72,15 @@ public class Runner
                 final long endMs = System.currentTimeMillis();
                 Duration duration = Duration.ofMillis(endMs - startMs);
                 if (error.isPresent()) {
-                    results.add(failure(suiteConf.getRunName(), suiteConf.getSuite(), queryName, duration, error.get()));
+                    results.add(failure(suiteConf.getRunName(), queryName, duration, error.get()));
                 }
                 else {
-                    results.add(success(suiteConf.getRunName(), suiteConf.getSuite(), queryName, duration));
+                    results.add(success(suiteConf.getRunName(), queryName, duration));
                 }
             }
             catch (Exception e) {
                 drawError(e.getMessage());
-                results.add(failure(suiteConf.getRunName(), suiteConf.getSuite(), queryName, Duration.ofMillis(System.currentTimeMillis() - startMs), e.getMessage()));
+                results.add(failure(suiteConf.getRunName(), queryName, Duration.ofMillis(System.currentTimeMillis() - startMs), e.getMessage()));
             }
 
             Result currentResult = results.get(results.size() - 1);

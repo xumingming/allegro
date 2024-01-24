@@ -1,8 +1,6 @@
 package io.github.xumingming.allegro.command.view;
 
 import io.github.xumingming.allegro.Result;
-import io.github.xumingming.allegro.RunNameAndSuite;
-import io.github.xumingming.allegro.Suite;
 import io.github.xumingming.allegro.SuiteConf;
 import io.github.xumingming.allegro.model.OperatorType;
 import io.github.xumingming.allegro.service.AnalysisService;
@@ -35,16 +33,16 @@ import static java.lang.String.format;
 public class ViewSingleResultAction
 {
     private AnalysisService analysisService = AnalysisService.create();
-    private RunNameAndSuite runNameAndSuite;
+    private String runName;
     private List<String> queryNames;
     private TableStyle tableStyle;
     private boolean normalize;
 
     private ResultService resultService = ResultService.create();
 
-    public ViewSingleResultAction(RunNameAndSuite runNameAndSuite, List<String> queryNames, boolean normalize, TableStyle tableStyle)
+    public ViewSingleResultAction(String runName, List<String> queryNames, boolean normalize, TableStyle tableStyle)
     {
-        this.runNameAndSuite = runNameAndSuite;
+        this.runName = runName;
         this.queryNames = queryNames;
         this.normalize = normalize;
         this.tableStyle = tableStyle;
@@ -61,21 +59,19 @@ public class ViewSingleResultAction
 
     public void act()
     {
-        List<Result> results = resultService.listByRunName(runNameAndSuite.getRunName(), true, normalize);
+        List<Result> results = resultService.listByRunName(runName, true, normalize);
         results = filterByQueryNames(results);
 
-        SuiteConf suiteConf = resultService.readSuiteConf(runNameAndSuite.getRunName());
-        String runName = runNameAndSuite.getRunName();
-
+        SuiteConf suiteConf = resultService.readSuiteConf(runName);
         long totalMillis = results.stream()
                 .map(Result::getElapsedTime)
                 .mapToLong(Duration::toMillis)
                 .sum();
 
         boolean containsFailure = results.stream().anyMatch(result -> result.getStatus() == Result.Status.FAILURE);
-        Result total = Result.success(runName, Suite.baseline, "Total", Duration.ofMillis(totalMillis));
+        Result total = Result.success(runName, "Total", Duration.ofMillis(totalMillis));
         if (containsFailure) {
-            total = Result.failure(runName, Suite.baseline, "Total", Duration.ofMillis(totalMillis), "-");
+            total = Result.failure(runName, "Total", Duration.ofMillis(totalMillis), "-");
         }
         List<Result> resultsIncludeTotal = new ArrayList<>();
         resultsIncludeTotal.addAll(results);

@@ -25,12 +25,12 @@ public class Result
         this.errorMessage = errorMessage;
     }
 
-    public static Result success(String runName, Suite suite, String queryName, Duration elapseTime)
+    public static Result success(String runName, String queryName, Duration elapseTime)
     {
         return new Result(runName, queryName, Status.SUCCESS, elapseTime, Optional.empty());
     }
 
-    public static Result failure(String runName, Suite suite, String queryName, Duration elapseTime, String errorMessage)
+    public static Result failure(String runName, String queryName, Duration elapseTime, String errorMessage)
     {
         return new Result(runName, queryName, Status.FAILURE, elapseTime, Optional.of(errorMessage));
     }

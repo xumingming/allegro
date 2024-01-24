@@ -20,7 +20,6 @@ import static java.lang.String.format;
 public class SuiteConf
 {
     private String runName;
-    private Suite suite;
     private String querySet;
     /**
      * Ip of the coordinator.
@@ -54,16 +53,6 @@ public class SuiteConf
     public void setRunName(String runName)
     {
         this.runName = runName;
-    }
-
-    public Suite getSuite()
-    {
-        return suite;
-    }
-
-    public void setSuite(Suite suite)
-    {
-        this.suite = suite;
     }
 
     public String getQuerySet()
@@ -207,7 +196,6 @@ public class SuiteConf
     {
         return "RunnerConf{" +
                 "runName='" + runName + '\'' +
-                ", suite=" + suite +
                 ", querySet='" + querySet + '\'' +
                 ", coordinatorIp='" + coordinatorIp + '\'' +
                 ", coordinatorPort=" + coordinatorPort +
@@ -228,19 +216,25 @@ public class SuiteConf
             return false;
         }
         SuiteConf that = (SuiteConf) o;
-        return coordinatorPort == that.coordinatorPort && Objects.equals(runName, that.runName) && suite == that.suite && Objects.equals(querySet, that.querySet) && Objects.equals(coordinatorIp, that.coordinatorIp) && Objects.equals(dbName, that.dbName) && Objects.equals(user, that.user) && Objects.equals(password, that.password) && Objects.equals(sessionProperties, that.sessionProperties);
+        return coordinatorPort == that.coordinatorPort
+                && Objects.equals(runName, that.runName)
+                && Objects.equals(querySet, that.querySet)
+                && Objects.equals(coordinatorIp, that.coordinatorIp)
+                && Objects.equals(dbName, that.dbName)
+                && Objects.equals(user, that.user)
+                && Objects.equals(password, that.password)
+                && Objects.equals(sessionProperties, that.sessionProperties);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(runName, suite, querySet, coordinatorIp, coordinatorPort, dbName, user, password, sessionProperties);
+        return Objects.hash(runName, querySet, coordinatorIp, coordinatorPort, dbName, user, password, sessionProperties);
     }
 
     public SuiteConf cloneWithSensitiveInfoMasked()
     {
         SuiteConf cloned = new SuiteConf();
-        cloned.setSuite(this.suite);
         cloned.setQuerySet(this.querySet);
         cloned.setRunName(this.runName);
         cloned.setCoordinatorIp(this.coordinatorIp);

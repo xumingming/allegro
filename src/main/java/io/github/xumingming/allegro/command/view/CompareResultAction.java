@@ -4,7 +4,6 @@ import io.airlift.units.DataSize;
 import io.github.xumingming.allegro.ComparingStringByNumberPart;
 import io.github.xumingming.allegro.Result;
 import io.github.xumingming.allegro.ResultList;
-import io.github.xumingming.allegro.RunNameAndSuite;
 import io.github.xumingming.allegro.SuiteConf;
 import io.github.xumingming.allegro.model.OperatorType;
 import io.github.xumingming.allegro.service.AnalysisService;
@@ -40,7 +39,7 @@ public class CompareResultAction
     private static final Color TABLE_HEAD_COLOR = Color.WHITE;
 
     private AnalysisService analysisService = AnalysisService.create();
-    private List<RunNameAndSuite> runNameAndSuites;
+    private List<String> runNames;
     private Optional<List<String>> names;
     private List<String> queryNames;
     private boolean normalize;
@@ -48,12 +47,12 @@ public class CompareResultAction
 
     private ResultService resultService = ResultService.create();
 
-    public CompareResultAction(List<RunNameAndSuite> runNameAndSuites, Optional<List<String>> names, List<String> queryNames, boolean normalize, TableStyle tableStyle)
+    public CompareResultAction(List<String> runNames, Optional<List<String>> names, List<String> queryNames, boolean normalize, TableStyle tableStyle)
     {
         if (names.isPresent()) {
-            checkState(runNameAndSuites.size() == names.get().size(), format("runNameAndSuites and names are not of the same size(%s vs %s)", runNameAndSuites.size(), names.get().size()));
+            checkState(runNames.size() == names.get().size(), format("runNameAndSuites and names are not of the same size(%s vs %s)", runNames.size(), names.get().size()));
         }
-        this.runNameAndSuites = runNameAndSuites;
+        this.runNames = runNames;
         this.names = names;
         this.queryNames = queryNames;
         this.normalize = normalize;
@@ -62,7 +61,7 @@ public class CompareResultAction
 
     public void act()
     {
-        int suiteCount = runNameAndSuites.size();
+        int suiteCount = runNames.size();
         List<Result> results = new ArrayList<>();
         List<SuiteConf> suiteConfs = new ArrayList<>();
         List<String> displayNames = new ArrayList<>();
@@ -71,13 +70,12 @@ public class CompareResultAction
         }
 
         for (int i = 0; i < suiteCount; i++) {
-            RunNameAndSuite runNameAndSuite = runNameAndSuites.get(i);
-
-            List<Result> current = resultService.listByRunName(runNameAndSuite.getRunName(), true, normalize);
+            String runName = runNames.get(i);
+            List<Result> current = resultService.listByRunName(runName, true, normalize);
             current = filterByQueryNames(current);
             results.addAll(current);
 
-            SuiteConf suiteConf = resultService.readSuiteConf(runNameAndSuite.getRunName());
+            SuiteConf suiteConf = resultService.readSuiteConf(runName);
             suiteConfs.add(suiteConf);
 
             if (!names.isPresent()) {
@@ -87,14 +85,13 @@ public class CompareResultAction
 
         // Print the conf first.
         for (int i = 0; i < suiteCount; i++) {
-            RunNameAndSuite runNameAndSuite = runNameAndSuites.get(i);
-            drawSuiteConf(resultService.readSuiteConf(runNameAndSuite.getRunName()));
+            drawSuiteConf(resultService.readSuiteConf(runNames.get(i)));
         }
 
         Map<String, List<Result>> queryToResults = results.stream().collect(Collectors.groupingBy(Result::getQueryName));
         List<ResultList> resultLists = new ArrayList<>();
         for (Map.Entry<String, List<Result>> pair : queryToResults.entrySet()) {
-            List<Result> sortedResults = sortResultListByRunNameAndSuite(pair.getValue(), runNameAndSuites);
+            List<Result> sortedResults = sortResultListByRunName(pair.getValue(), runNames);
             resultLists.add(new ResultList(sortedResults));
         }
 
@@ -133,9 +130,7 @@ public class CompareResultAction
 
         List<Result> summaryResults = new ArrayList<>(suiteCount);
         for (int i = 0; i < suiteCount; i++) {
-            RunNameAndSuite runNameAndSuite = runNameAndSuites.get(i);
-
-            Result summaryResult = Result.success(runNameAndSuite.getRunName(), runNameAndSuite.getSuite(), "Total", Duration.ofMillis(elapseTimeTotalMillisList.get(i)));
+            Result summaryResult = Result.success(runNames.get(i), "Total", Duration.ofMillis(elapseTimeTotalMillisList.get(i)));
             summaryResult.setCpuTime(Duration.ofMillis(cpuTimeTotalMillisList.get(i)));
             summaryResult.setPeakMemory(DataSize.succinctBytes(peakMemoryBytesList.get(i)));
             summaryResults.add(summaryResult);
@@ -152,21 +147,21 @@ public class CompareResultAction
         compareTopOperatorsByWallTime(displayNames, suiteConfs);
     }
 
-    private List<Result> sortResultListByRunNameAndSuite(List<Result> results, List<RunNameAndSuite> runNameAndSuites)
+    private List<Result> sortResultListByRunName(List<Result> results, List<String> runNames)
     {
         checkState(
-                results.size() == runNameAndSuites.size(),
-                format("results and runNameAndSuites are not of the same size. (%s vs %s), query: %s", results.size(), runNameAndSuites.size(), results.get(0).getQueryName()));
+                results.size() == runNames.size(),
+                format("results and runNameAndSuites are not of the same size. (%s vs %s), query: %s", results.size(), runNames.size(), results.get(0).getQueryName()));
         List<Result> ret = new ArrayList<>(results.size());
 
-        for (int i = 0; i < runNameAndSuites.size(); i++) {
-            RunNameAndSuite runNameAndSuite = runNameAndSuites.get(i);
+        for (int i = 0; i < runNames.size(); i++) {
+            String runName = runNames.get(i);
             Optional<Result> resultOpt = results
                     .stream()
                     .filter(
-                            result -> result.getRunName().equals(runNameAndSuite.getRunName()))
+                            result -> result.getRunName().equals(runName))
                     .findFirst();
-            checkState(resultOpt.isPresent(), format("No result for %s#%s, results are: %s", runNameAndSuite.getRunName(), runNameAndSuite.getSuite(), results));
+            checkState(resultOpt.isPresent(), format("No result for %s, results are: %s", runName, results));
             ret.add(resultOpt.get());
         }
 
